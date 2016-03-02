@@ -6,13 +6,11 @@
 
 # DATA CLEANING
 # ==============
-library(dplyr)
-library(Amelia)
 
 # Load data
 rawdat <- read.csv("HCT.txt", na.strings = "", stringsAsFactors = TRUE)
 str(rawdat)
-tbl_df(rawdat)
+dplyr::tbl_df(rawdat)
 
 # Edit variable names
 colnames(rawdat) <- c("id", "state", "lga", "facility", "ref.from", "setting",
@@ -32,7 +30,7 @@ colnames(rawdat) <- c("id", "state", "lga", "facility", "ref.from", "setting",
                        "contracep.condom", "condom.correct", "condom.given")
 length(colnames(rawdat)) # should be equal to no. of variables
 anyNA(colnames(rawdat)) # check if any name was missed
-tbl_df(rawdat)
+dplyr::tbl_df(rawdat)
 
 # make adjustments
 rawdat$name <- as.character(rawdat$name)
@@ -56,7 +54,7 @@ head(rawdat$date)
 
 # Process missing values
 apply(rawdat, 2, function(x) sum(is.na(x))) # missing values per variable
-missmap(rawdat,
+Amelia::missmap(rawdat,
         main = "Missing values in rawdat dataset") # plot missing values
 
 rawdat$age[is.na(rawdat$age)] <- median(rawdat$age, na.rm = TRUE)
