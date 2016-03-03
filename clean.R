@@ -6,6 +6,7 @@
 
 # DATA CLEANING
 # ==============
+library(Amelia)
 
 # Load data
 rawdat <- read.csv("HCT.txt", na.strings = "", stringsAsFactors = TRUE)
@@ -36,7 +37,7 @@ dplyr::tbl_df(rawdat)
 rawdat$name <- as.character(rawdat$name)
 str(rawdat$name)
 
-rawdat$setting[is.na(rawdat$setting)] <- "rawdat"
+rawdat$setting[is.na(rawdat$setting)] <- "HCT"
 anyNA(rawdat$setting) # desired output - FALSE
 
 rawdat$marital.status[rawdat$marital.status == "Singe"] <- "Single"
@@ -54,11 +55,25 @@ head(rawdat$date)
 
 # Process missing values
 apply(rawdat, 2, function(x) sum(is.na(x))) # missing values per variable
-Amelia::missmap(rawdat,
+missmap(rawdat,
         main = "Missing values in rawdat dataset") # plot missing values
 
+# replace missing age entries with median
 rawdat$age[is.na(rawdat$age)] <- median(rawdat$age, na.rm = TRUE)
 anyNA(rawdat$age)
+
+# subset by removing redundant variables
+rawdat <- rawdat[, -c(43:57)]
+subset(rawdat, select = c(counsel.type, wives, children.U5, lower.abd,
+                          vag.discharge, scrotal, gen.sore, pregnant))
+complete.cases(rawdat)
+
+# split into male and female groups
+grouped <- split(rawdat, rawdat$sex)
+missmap(grouped$Female, main = "Missingness Map for Females")
+missmap(grouped$Male, main = "Missingness Map for Males")
+
+
 
 # Save as file
 write.csv(rawdat, file = "hctclean.csv")
