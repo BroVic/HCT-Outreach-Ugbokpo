@@ -17,6 +17,9 @@ custom_plot <- function(){ # adjusts y-axis and adds horizontal gridlines
 percent <- function(x) prop.table(table(x))*100 # prop.table as percent values
 # -----------------------------------------------------------------------------
 
+# Load the dataset
+hctdata <- read.csv("hctclean.csv")
+
 # Generate an overview/summary of the data
 print(summary(hctdata))
 
